@@ -1,0 +1,263 @@
+Default Routing
+Dynamic Routing
+Routing Protocol & Routed Protocol
+Classful & Classless Routing
+AD
+RIP
+EIGRP
+
+
+DTE & DCE:  Data Terminal Equipment & Data Communication Equipment
+								#show controllers s0/0
+
+		Troubleshooting Serial WAN link issues
+			1. encapsulation mismatch
+
+				HDLC		default for CIsco Routers
+				Frame-RELAY
+				PPP
+				2. Clock rate missing(DCE End)
+============================================================================
+Classful & Classless network:
+classful addressing uses fixed-length subnet masks, but classless uses variable length subnet masks (VLSM).
+
+====================================================================================
+C	20.0.0.0 fa0/0
+C	172.16.0.0  s0/0/0
+
+
+
+pc 20.0.0.2		ping 180.0.0.1		drop the packet
+	.1
+===============================================================================
+Default Routing:	
+		Stub NW		a nw with one entry & exit point
+				is used when destination nw is unknown, and you dont want to drop a packet.
+				default routing can be used to forward unknown packets towards internet(ISP)
+				is used in stub nw.
+
+
+two ways
+	1. self exit
+	2. next hop method
+
+
+Internal Network:
+===============
+(config)# ip route 0.0.0.0 0.0.0.0 s0/0/0
+(config)#do show ip route
+
+S* 0.0.0.0/0 is connected to s0/0/0
+
+ISP#
+(config) ip route 192.168.6.0 255.255.255.0 s0/0/0
+=====================================================================
+Dynamic Routing:
+		1. Suitable for Large internetworks
+		2. less burden on Administrator
+		3. more burden on Router's CPU and Memory
+
+		4. Routing protocols are responsible for searching neighbors/networks & defining best  path.(routing)
+		
+Routing Protocol: RIP, IGRP, OSFP, EIGRP, IS-IS, BGP(Border Gateway Protocol)
+
+Routed Protocol--- delivers the data over defined path---> IPv4 IPv6
+
+
+Types of Dynamic Routing Protocols
+1. Distance vector Routing Protocol	DVRP	examples-- RIPv1 & RIPv2, IGRP
+2. Link State Routing Protocol		LSRP		-- OSPF & IS-IS
+3. Hybrid-- Advanced DVRP				-- EIGRP
+
+RIP-- Routing Information
+OSPF-- Open Shortest Path First
+IGRP-- Interior Gateway Routing Protocol
+EIGRP--- Enhanced IGRP
+IS-IS-- Intermediate System-Intermediate System
+
+=====================================================================
+IMP
+
+AD: Administrative Distance	--- ranking given by Cisco to each Routing protocol that defines the trust worthyness of these routing protocols			0--255
+					lower the value---highest the ranking
+
+				--- is useful, when multiple routing protocols are configured on same router, Router will keep the routing entries in a table of a protocol with least AD value.
+
+Routing Protocol				AD value
+Static Routing(Directly connected)		0
+Static Routing (next hop)			1		
+RIP						120
+IGRP						100
+EIGRP
+		internal			90						
+		external			170
+OSPF						110
+IS-IS						115
+===========================================================================
+IRP						ERP
+Interior Routing Protocol			Exterior Routing Protocol
+IGP						EGP
+Interior Gateway Protocol			Exterior Gateway Protocol
+IGP examples:RIP, IGRP, OSPF			BGP
+		IS-IS, EIGRP
+
+IGP: supports routing within a domain
+EGP: supports routing between a domains		
+======================================================================================================
+Classful Routing				Classless Routing
+1. Doesn't send subnet mask info		1. Send Subnet Mask & NW info both
+   while sending periodic updates, only 
+  send NW info
+
+2. NO VLSM Support				2. VLSM Support
+3. NO IP Subnet Zero	support			3. IP Subnet Zero support
+4. RIPv1, IGRP					4. RIPv2, EIGRP, , IS-IS, OSPF
+====================================================================================
+
+r1  users	--------------		r2  users
+
+10.0.0.0/8				20.0.0.0/8
+20.0.0.0/8  r2				10.0.0.0/8  r1
+
+
+
+r1  users	--------------		r2  users
+
+10.0.0.0/24				20.0.0.0/24
+20.0.0.0/24  r2				10.0.0.0/24  r1		10.0.0.0/8	(10.0.0.1----10.255.255.255)
+
+
+255.255.255.0
+			256
+
+0	1	2	3
+							
+
+255	255
+
+192.168.100.0/26		255.255.255.192
+
+			BS 64
+				
+0	64	128		192
+1
+
+
+
+62
+63	127	191		255
+
+=============================================================
+
+
+RIP : Routing Information Protocol
+1. periodic updates after every 30 secs.
+2. Dynamic Routing Protocol
+3. AD Value: 120
+4. example of DVRP
+5. open standard RP	
+6. Bellman Ford Alogorithm
+7. Metric: Hop Count
+8. maximum hop count is 15 (16th router is unreachable)
+9. slow convergence
+10. suitable for small internetwork
+11. Auto Summarization
+	two versions:
+	
+	RIPV1							RIPv2
+
+     	Classful						Classless
+	no VLSM							VLSM
+	no ip subnet zero					supports
+	Routing updates via broadcast				Routing updates via Multicast Address
+	255.255.255.255						224.0.0.9
+	doesn't support authentication				supports authentication
+
+	
+
+
+
+
+
+1.0.0.0			2.0.0.0			3.0.0.0			contigous
+
+
+1.0.0.0	     	5.0.0.0			9.0.0.0			discontiguos
+
+
+
+192.168.1.0/24
+
+	/27					/30
+
+
+255.255.255.224					255.255.255.252
+BS  32						BS 4
+
+0	32		64			96		100		104		
+1	33					97		101
+
+30	62					98		102
+31	63		95			99		103
+==================================================================
+	IGRP
+EIGRP  	
+1. Enhanced Interior Gateway Routing Protocol
+2. AD Value: internal 90 external 170
+3. Classless RP
+4. Supports VLSM
+5. Dynamic RP
+6. Example of Hybrid Adv DVRP
+7. Cisco Properietry Protocol
+8. Best Dynamic Routing protocol 
+9. Supports Manual + Auto summarization
+10. Triggered update
+11. Multicast updates (address  224.0.0.10)
+12. Condition for neighborship relationship:
+		1. AS number should be same
+		2. Hello & reply ACK should received
+		3. Metrics should be same
+
+13. Metrics:  Bandwidth, Delay of Line, Load, MTU, Reliability
+14. Incremental updates
+15. Default Hop Count 100 , Max hop count 255 
+
+
+ASN  Autonomous System Number:  given by IANA(Internet Assigned Numbering Authority)
+				A group of routers under single administrative control
+
+
+
+16. Types of EIGRP Packets:
+1. Hello Packets  & ACK Packet	(Multicast)			neighbor discovery /recovery
+2. Route Update		routing table		
+3. Query & reply packets	Multicast & unicast
+
+
+
+
+R0:
+	# show ip route
+	#conf t
+	(config)#router eigrp 10
+	(config-router)#network x.x.x.x
+	(config-router)#network y.y.y.y
+	(config-router)#no auto summary
+			#end
+			show ip route eigrp
+			#show ip eigrp neighbors
+			#show ip eigrp topology
+			
+	
+
+
+
+
+
+
+
+
+
+
+
+

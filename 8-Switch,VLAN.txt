@@ -1,0 +1,388 @@
+IPv6
+Switch basics/Switching types
+VLAN
+DTP
+Port-Security
+========================================================================================
+	IPv6:		Next Gen IP Address:  To overcome the shortage of IPv4 Add, IPv6 was introduced
+
+	is of 128 bits
+	in Hexa-decimal format
+
+			16:16:16:16        :16:16:16:16
+			    64bits			64bits
+
+			16:16:16   		 :16        :16:16:16:16
+			48bits Global	subnet		host bits
+			   prefix
+
+
+		2^32===xxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+	2001:abcd:44cc:ffbb:a239:12de:9087:cfab
+
+	Types of Ipv6 Address:
+	1. Unicast			one -one
+	2. Multicast		one to many not all			224.x.x.x			FF00::/8														11111111
+										239.x.x.x
+	3. Anycast			one to one of many
+
+
+	Unicast:
+	====== 
+	1. Global Unicast Address		2000::/3		00000010	public add
+						3FFF::/3		00000011
+
+	2. Link Local Address:			FE80::/10		1111111010		private Address  	(APIPA)---169.254.x.x
+	FF00::/8
+
+
+	EIGRPv6		Multicast		224.0.0.10			FF02::A
+
+	RIPv6 RIPng				224.0.0.9			FF02::9
+
+	OSPFv3					224.0.0.5/.6			FF02::5/6
+
+
+
+Shortend Rules:
+1. 2001:0012:3004:ff00:1001:abcd:0001:1000
+
+Ans: skip leading zeros
+
+	2001:12:3004:ff00:1001:abcd:1:1000
+
+
+2. 2001:0000:0000:abcd:0000:0000:ffee:0002
+	
+		2001:0:0:abcd:0:0:ffee:2
+
+
+		2001::abcd::ffee:2		XXXX
+
+
+		2001::abcd:0:0:ffee:2		correct
+
+			OR
+		2001:0:0:abcd::ffee:2		correct
+
+
+
+3. 	2001:0000:0000:0000:0000:0000:0000:0001
+
+		
+		2001::1/64
+
+	Loopback Address			IPv4		127.0.0.1
+						IPv6		0000:0000:0000:0000:0000:0000:0000:0001		::1
+
+
+
+2001:abcd:44cc:ffbb   :a239:12df:9087:cfab
+2001:abcd:44cc:ffbb   :a239:12df:9087:cfaa
+
+================================================================================
+	Switching:
+
+	1. nw device  connects similar nw devices
+	2. 8, 16 24 32  48  64  128  256  512 ports
+	3. Types of switches: 1. L2 switch, L3 Switch, L4 Switch(MLS)
+	4. Manageable & non Manageable sw
+	5. full duplex
+	6. faster than hub
+	7. L2 device
+	8. Functions of Switches:
+		a. Address learning
+		b. Filter/forward decision
+		c. Loop Avoidance  STP
+	9. maintains a mac table
+		
+
+		L2/L3/L4 SW
+		L2 Switch		similar nws
+		L3 Switch		different nws(similar to router)
+		L4	MLS		Multi Layer Switch
+
+		ping the devices:
+		#show mac address-table			to see mac table(keeps learned mac addresses)
+		#clear mac address-table		to manually clear mac table entries
+=========================================================================================================
+VLAN1---management interface(1.0.0.100)--> management ip		for remote access  logical interface
+
+to assign ip to vlan1
+			config#int vlan1
+					ip add 1.0.0.100 255.0.0.0
+						no shut
+
+				
+=======================================================================================================================					
+Switching Types:
+1. Cut Through				fast forward		1000
+2. Modified Cut Through		Fragment Free		1900
+3. Store & Forward							2950	 slow latency
+
+
+				runts			data size is lesser than 64/46 bytes
+	
+				giants			data size greater than 1500 bytes
+
+
+===============================================================================================================
+Virtual Local area network:		logical division of users/systems rather than dividing them physically.
+							grouping of pcs can be done through vlan to enhance security.
+					group of a port/users/pcs
+
+					vlan.dat
+			vlan 100
+			int fa0/1
+				
+Advantages
+
+1. Security
+2. increases the number of b'cast domain
+
+Types of VLAN:
+1. Static VLAN:   grouping of pcs is done on the basis of port number membership. 
+2. Dynamic VLAN:   grouping of pcs is done on the basis of mac addresses. More better way of implementing VLAN in network.
+					can be used  with 4500 series or above series.
+
+
+			VLAN 1	default, Native, Management VLAN  (int vlan1)
+
+			VLAN Range:	2-1001,  1006---4094
+
+			# show vlan:  shows all available vlans
+			To create vlan:
+						config# vlan 2
+						(config-vlan)# name HR
+							     # exit
+
+						config# vlan 3
+						(config-vlan)# name Sales
+							     # exit
+
+		To assign VLAN port membership:
+					int fa0/1
+					switchport mode access
+					switchport access vlan 2
+
+
+Switchport modes
+		1. access		
+		2. trunk
+		3. dynamic  DTP (Dynamic Trunking Protocol)---- trunking protocol  transmitting vlan data between multiple switches
+			a.auto		(default)
+			b.desirable
+===========================================================
+
+		access---access		no
+		access---trunk		limited connectivity
+		trunk----trunk		yes(avoided DTP)
+		trunk----auto		yes
+		trunk---desirable	yes
+		desirable--desirable	yes
+		desirable---auto		yes
+
+		
+
+to disable dtp (fa0/1-24)
+config#int range fa0/1-24
+		switchport mode access
+		switchport nonegotiate
+		do sh run
+
+===============================================================================================
+
+SW0:
+====
+#conf t
+#vlan 100
+#name Admin
+#exit
+#conf t
+#vlan 200
+#name IT
+#exit
+#conf t
+#vlan 300
+#name Finance
+#exit
+#do show VLAN
+===================================
+config#int range fa0/1-2
+        #switchport mode access
+	#switchport access vlan 100
+	#exit
+
+config#int fa0/3
+        #switchport mode access
+	#switchport access vlan 200
+	#exit
+config#int fa0/4
+        #switchport mode access
+	#switchport access vlan 300
+	#exit
+	#do show vlan
+==============================================
+SW0:
+
+#conf t
+#vlan 100
+#name Admin
+#exit
+#conf t
+#vlan 200
+#name IT
+#exit
+#conf t
+#vlan 300
+#name Finance
+#exit
+#do show VLAN
+===================================
+SW1:
+===
+config#int  fa0/1
+        #switchport mode access
+	#switchport access vlan 100
+	#exit
+
+config#int range fa0/2-3
+        #switchport mode access
+	#switchport access vlan 200
+	#exit
+config#int fa0/4
+        #switchport mode access
+	#switchport access vlan 300
+	#exit
+	#do show vlan
+
+
+trunk port:  capable of carrying multiple vlan traffic
+trunk link: link between two switches, between switch & router
+access link: link between pc and switch
+access port: where end devices are connected
+
+
+switchport
+		modes
+			access
+			trunk
+			dynamic
+				a.auto		default
+				b. desirable
+
+
+
+SW0#show int fa0/10 switchport		shows the operational mode of switchport fa0/1 
+
+SW1#show int trunk			shows the details of trunk port and Frame tagging name
+
+
+==============================================================================
+
+DTP Dynamic Trunking Protocol
+1. Layer 2 protocol
+2. Cisco Prop Protocol
+
+
+
+port			auto			no negotiate
+
+		trunk		dedicated for trunking
+
+			show int gi0/1 switchport
+
+		sw0					sw1
+		gi0/1					gi0/1
+
+		auto		NO			auto
+		auto		Yes			trunk			int gi0/1
+										switchport mode trunk
+		auto		NO			access
+
+		access		NO			access
+		trunk		Yes			trunk
+		trunk	        yes   			auto
+		desirable	yes			trunk
+		desirable	yes			desirable
+		desirable	yes			auto
+
+========================================================================
+		To disable DTP from all ports of sw0(fa0/1---fa0/24)
+		int range fa0/1-24
+		#switchport mode access
+		#switchport nonegotiate			disable DTP on fast ethernet ports
+
+		#end
+		show int trunk				shows the trunk port detail
+
+
+===========================================================================================
+	Port-Security  Very very imp
+
+1. Port-Security: is used to restrict unauthorized traffic on a specified port.
+			: In port security, Specified ports can be reserve using a device MAC address
+				 so that no device can use that port.
+
+Port-security violation modes: 
+
+1 Shutdown(default): when reserved port received an unauthorized traffic, port will enter into shutdown mode
+
+
+2. Protect Mode: Port will not allow any unauthorized traffic to pass through reserved port. Only reserved pc's traffic will be allowed on reserved port. 
+
+3. Restrict Mode: Similar to protect mode, but it will also maintainS a log in syslog server.
+
+============================================================================
+Shutdown mode
+
+enable
+Sw#conf t
+config# int gi0/1
+	 # switchport mode access
+	  # switchport port-security
+	# switchport port-security maximum 1
+	#switchport port-security violation shutdown
+	#switchport port-secuirty mac-address 0001.xxxx.yyyy
+	#end
+	#show port-security
+	#show port-security int gi0/1
+
+		now connect pc2 to gi0/1	ping to 1.0.0.2
+		port will enter into shutdown mode
+
+		then remove pc2 cable, connect server cable to gi0/1, still it is in shutdown mode. To bring it up
+
+		config#int gi0/1
+				shutdown
+				no shutdown
+		
+====================================================================
+Protect mode
+
+	enable
+	Sw#conf t
+	config# int gi0/2
+	 # switchport mode access
+	  # switchport port-security
+	# switchport port-security maximum 1
+	#switchport port-security violation protect
+	#switchport port-secuirty mac-address 0001.aaaa.bbbb
+	#end
+	#show port-security
+	#show port-security int gi0/2
+
+		now connect pc0 to gi0/2	ping to 1.0.0.2		(request time out), unauthorized traffic will be rejected
+		
+
+		then remove pc0 cable, connect laptop cable to gi0/2,  it will allow traffic of Laptop  (ping 1.0.0.2)
+
+
+
+==================================================================================================================VLAN imp:
+
+
+

@@ -1,0 +1,221 @@
+	OSI Model
+	TCP/IP Model
+	VTP
+	PortFast
+	Inter-Vlan Communication
+=============================================================================
+Inter-VLAN Communication		V IMP   difficult   communication between diff vlans
+
+
+vlan 10		vlan 20
+
+ping  yes
+
+
+1. ROS		Router on Stick
+2. SVI		Switched Virtual Interface
+
+
+
+
+	VLAN Encapsulation/ Frame Tagging:
+	1. ISL   Inter-switch link			tagging a frame on trunk port  	cisco prop 2000 or above
+	2. dot1q						IEEE		open standard tagging method  cisco & non 	cisco switches
+
+
+
+On Switch:
+
+config#int gi0/1
+	switchport mode trunk
+
+	exit
+
+config#vlan 50
+		name A
+		exit
+
+config#vlan 60
+		name B
+		exit
+		do sh vlan
+
+config#intfa0/1
+		switchport mode access
+		switchport access vlan 50
+		exit
+
+config#intfa0/2
+		switchport mode access
+		switchport access vlan 60
+		end
+		#sh vlan
+	======================================================
+
+On router:
+==========
+config#int fa0/0
+		no sh
+		no ip add
+		exit
+
+		int fa0/0.50
+		encapsulation dot1q 50
+		ip address 192.168.100.50 255.255.255.0
+		exit
+
+		int fa0/0.60
+		encapsulation dot1q 60
+		ip address 192.168.200.50 255.255.255.0
+		end
+		#sh ip int bri
+		
+----------------------------------------------------------------------------------
+
+VTP	l2 protocol
+	virtual LAN Trunking protocol
+		reduces administrative task of VLAN Mgmt
+
+demonstrate dtp  
+
+sw0
+int gi0/1
+switchport mode dynamic desirable
+
+do sh int gi0/1 switchport
+
+sw1
+int gi0/1
+switchport mode dynamic auto
+
+do sh int gi0/1 switchport
+
+server----	client-----transparent	-----	client
+		access---access		
+		access---trunk	 	
+		trunk----trunk		
+		trunk----auto		
+		trunk---desirable	
+		desirable--desirable	
+		desirable---auto		
+
+====================================================
+
+OSI Model
+
+Application Layer L7
+
+where user works		DNS, DHCP, SMTP POP3 IMAPv4, HTTP, HTTPS, Telnet, FTP, TFTP, BootP, SNMP
+
+Presentation Layer	L6	Data Translation, Encryption, Decryption, Compression, Decompression.
+
+					.txt, docx, .JPEG, .png, .mp3, .mp4
+
+	ASCII		
+
+A	65
+B	66
+
+
+a	97
+
+			ABC		65 66 67		01000001
+
+		Network Layer L3		Router, L3 Switches
+				ICMP, ARP, RARP, EIGRP, IGRP, OSPF, RIP
+
+	1. Logical Addressing
+	2. Routing
+	3. Converting /translating IP to MAC & MAC to IP
+
+
+
+		Layer 2   DLL			L2 Switches, Bridge, NIC 
+				HDLC, PPP, Frame-Relay
+		1. Framing
+		2. Error Detection
+		3. Converting into Bits/Bytes
+
+			Sub Layer of DLL
+		1. LLC	Logical Link Control	(a. LCP-->Link Control Protocol, b. NCP Network Control Protocol)
+		2. MAC	Media Access Control
+
+
+		
+
+	VTP: Virtual LAN Trunking Protocol:
+	===================================
+
+	1. L2 Protocol
+	2. Cisco Prop Protocol
+	3. Reduces the administrative workload of VLAN Management(Create/Delete/rename) VLAN.
+	4. Sends VTP packets as  Multicast packets through Trunk ports after every 5 mins, or triggered update in case of 	   any VLAN modification.
+
+	VTP Modes:
+	1. Server		Default Mode	
+		1.Can create/delete/rename vlan.
+		2.Sends VLAN updates with connected Switches
+		3. stores information in NVRAM
+		4. synchronize VTP updates
+	2. Client
+		1.cannot create/delete/rename vlan
+		2. Synchronize VLAN information received from connected switches.
+		3. cannot store in NVRAM
+		4. Forwards received VLAN information
+					
+	3. Transparent
+		1.Can create/delete/rename vlan.
+		2. doesn't syncronize LOCAL VLAN updates with connected Switches
+		3. stores information in NVRAM
+		4. Forwards received VLAN information to connected switches.
+
+
+
+demonstrate working of dtp:
+===========================  
+
+sw0
+int gi0/1
+switchport mode dynamic desirable
+
+do sh int gi0/1 switchport
+
+sw1
+int gi0/1
+switchport mode dynamic auto
+
+do sh int gi0/1 switchport
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
