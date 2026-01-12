@@ -1,0 +1,302 @@
+EIGRP
+	
+17.Types of EIGRP Tables:
+	1. Routing table:  best path
+	2. neighbor table: neighbor infn
+	3. topology table: alternate best path infn is kept in topology table		(6 alternate best path is kept)
+
+
+18. DUAL . EIGRP uses DUAL--Diffusing update algorithm
+
+
+	
+19. RTP: EIGRP uses Reliable Transport Protocol(RTP) sends unicast packet, in case of not getting Ack packets from neighbor 	router. after 16 unsuccessful attempt, will declare neighbor dead.
+
+20. Sends Hello Packets after every 5 secs.
+
+21.	Feasible Distance: Total distance from source to destination.
+
+22.	Feasible Successor: Next best alternate path (can keep upto 6 feasible successor in topology table).
+
+23.	Advertise Distance/Reported Distance: total distance from next hop till destination nw is called RD or AD 			
+24.	Successor Route:  Best path to reach destination. is kept in Routing table.
+
+
+R0:
+	# show ip route
+	#conf t
+	(config)#router eigrp 10
+	(config-router)#network x.x.x.x
+	(config-router)#network y.y.y.y
+	(config-router)#no auto summary
+			#end
+			show ip route eigrp
+			#show ip eigrp neighbors
+			#show ip eigrp topology
+K Value	Component	Description
+K1			Bandwidth	Lowest bandwidth of route
+K2			Load	Worst load on route based on packet rate
+K3			Delay	Cumulative interface delay of route
+K4			Reliability	Worst reliability of route based on keep alive
+K5			MTU	Smallest MTU in path [Not used in route calculation]
+
+
+Loopback Interface			artificial interface   testing & troubleshooting purpose
+
+		Physcial Interfacesfast ethernet
+					gig
+					serial
+					console
+To assign Loopback IP	 
+		config#int loopback 0
+			#ip add 3.0.0.1 255.0.0.0
+			#exit
+		config#int loopback 1
+			#ip add 9.0.0.1 255.0.0.0
+			#exit
+	Advertise New Networks thru EIGRP
+
+			config#router eigrp 10
+				#network 3.0.0.0
+				#network 9.0.0.0
+		
+	goto pc---cmd
+			ping 3.0.0.1
+			ping 9.0.0.1
+
+	
+		
+
+Loopback Address:  127.x.x.x
+No auto-summary
+Metrics
+OSPF
+ACL
+
+
+0	32	64	96	128		160	192	224	
+1	33	65	97	
+=========================================================================================
+Metrics			conditions/criteria to decide best path
+
+	RIP		HOP Count
+
+	IGRP,EIGRP	BW, Delay of Line, Load, MTU(Max transmission unit, Reliability
+
+				time taken to deliver data from source to dest
+		TCP /IP		1518 Bytes
+
+	OSPF			COST		1/BW
+1/255			not reliable
+255/255
+======================
+OSPF  Open Shortest path First
+1. Dynamic RP
+2 example of LSRP
+3. Open standard routing protocol	multi vendor router
+4. Max Hop count-- unlimited large internetwork
+5. Classless RP
+6. VLSM support
+7. Dr. Dijkstra Algorithm
+8. complex RP-- consumes more hw resources(CPU, RAM)
+9. Works on the concepts of Area, dividing large internetwork into small internetworks called Areas. First area is called Area0, also known as backbone area
+10. LSA Link State Advertisement packets---- packets containing route updates
+11. Metric--- Cost
+12. AD Value	110
+13. Triggered updates
+14. Incremental updates
+15. Hello packets are sent after every 10 seconds
+16. Multicast Address used by OSPF is 224.0.0.5 and 224.0.0.6
+17. Manual Summarization
+
+17. Conditions for Neighborship relationship
+	1. Area ID
+	2. Hello & Dead Interval Timers		(default is 10 & 40)
+	3. Authentication password
+	
+
+			#conf t
+			#router ospf  1
+			#network 192.168.1.0 0.0.0.31 area 0
+			#network 192.168.1.96 0.0.0.3 area 0
+			 #end
+			#show ip ospf int
+			@sh ip route ospf
+
+A		255.0.0.0
+		0.255.255.255		wild card mask
+
+B		255.255.0.0	
+		0.0.255.255
+
+
+C		255.255.255.0
+		0.0.0.255
+
+============================================================================================
+
+Access Control List(ACL):
+========================
+		is used for packet filtering
+		is like a firewall.
+		filtering /controlling the nw traffic which is passing through the router.
+
+			incoming/outgoing traffic
+			inbound/outbound
+
+
+			permit/deny/remark
+
+Types of ACL:
+
+a. Standard ACL
+b. Extended ACL
+=============
+Configuration Methods:
+1.  Numbered ACL:
+			standard	1-99			extended range		1300-1999
+			extended	100-199						2000-2699
+2.  Named ACL:
+			standard
+			extended
+
+
+Standard ACL:
+1. As per Cisco standards, can be given on destination router.
+2. can read only source address.
+3. can block entire network, can't be used to block a specific pc/port/service.
+
+Extended ACL:
+1. As per Cisco standards, can be given on source router.
+2. can read both source address & destination address.
+3. can be used to block entire network, to block a specific pc/port/service.
+
+
+
+
+
+conf t
+
+ACL Rules
+
+access-list 5 deny host 192.168.1.35				explicit deny
+								implicit deny
+
+access-list 5 permit any					explicit allow
+
+========================================================================================
+to apply ACL:
+
+int s0/0
+ip access-group 5 in
+
+OR
+
+int fa0/0
+ip access-group 5 out
+==============================================================
+
+conf t
+int fa0/0
+no ip access-group 5 out				//To remove the impact of ACL
+exit
+config#no access-list 5					//to remove ACL rules
+	#end
+	show access-list
+
+
+====================================================================
+To block specific Network(192.168.1.0------> for Server0)
+
+
+pc0			pc3
+192.168.1.2		192.168.1.35
+
+access-list 110 deny ip host  192.168.1.2 host  192.168.1.35
+OR
+access-list 110 deny ip 192.168.1.2 0.0.0.0  192.168.1.35 0.0.0.0
+
+0 --->	exact
+255 --->any
+
+access-list 110 deny ip 192.168.1.0 0.0.255.255  192.168.1.35 0.0.0.0
+
+192.168.1.2  deny
+
+192.168.1.5  deny
+
+192.168.2.5  deny
+
+
+access-list 110 deny ip any  any ---->   will deny all traffic for all nws
+==================================================
+
+192.168.1.0/27
+
+
+192.168.1.31
+
+to block 192.168.1.0/27 nw for server(192.168.1.68)
+
+access-list 140 deny ip 192.168.1.0 0.0.0.31  192.168.1.68 0.0.0.0
+access-list 140 permit ip any any
+
+int fa0/0
+ip access-group 140 in
+do sh access-list
+
+
+deny 172.16.1.1 0.0.0.0
+
+
+172.16.3.0
+	4.0
+	5.0
+	6.0
+
+
+
+
+172.16.6.255
+
+
+access-list 10 deny 172.16.3.0   0.0.3.255
+
+
+deny 172.16.64.0  0.0.15.255
+
+172.16.64.0-----------------------172.16.79.255
+
+
+
+deny 172.16.32.0  0.0.7.255
+		172.16.32.0-----172.16.39.255
+
+
+Service----web
+
+http	80
+
+https	443
+
+
+ping 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			
